@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: Colors Around Us - Interactive Slides</title>
+    <style>
+        :root {
+            --bg-color: #fffbeb;
+            --primary-color: #fbbf24;
+            --secondary-color: #3b82f6;
+            --accent-color: #ec4899;
+            --card-bg: #ffffff;
+            --text-dark: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fef3c7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Presentation Container */
+        .presentation-container {
+            width: 950px;
+            max-width: 100%;
+            background: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Slides Holder */
+        .slides-wrapper {
+            flex: 1;
+            width: 100%;
+        }
+
+        .slide {
+            width: 100%;
+            max-height: 540px; 
+            overflow-y: auto;  
+            padding: 40px;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* Kustomisasi Scrollbar */
+        .slide::-webkit-scrollbar, .scroll-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        .slide::-webkit-scrollbar-thumb, .scroll-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* Typography */
+        h1 { font-size: 2.5rem; color: #b45309; text-align: center; margin-bottom: 10px; }
+        h2 { font-size: 1.8rem; color: var(--text-dark); margin-bottom: 15px; text-align: center; }
+        p { font-size: 1.1rem; color: #4b5563; text-align: center; margin-bottom: 15px; }
+
+        /* Controls Bar di Bawah */
+        .controls {
+            height: 60px;
+            background: #ffffff;
+            border-top: 2px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); opacity: 0.9; }
+        .btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+        .btn-accent { background: var(--accent-color); }
+        .btn-success { background: #10b981; }
+
+        /* Color Cards (Slide 3) */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+        .color-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: transform 0.2s;
+        }
+        .color-card:hover { transform: scale(1.05); }
+        .color-block {
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Kotak Teks Scroll Internal */
+        .scroll-box {
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .chat-line { margin-bottom: 12px; font-size: 1rem; line-height: 1.5; }
+        .chat-line strong { color: #b45309; }
+
+        /* Object Game (Slide 5) */
+        .object-display {
+            display: flex;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            width: 100%;
+            gap: 20px;
+            align-items: center;
+        }
+        .img-box { width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; background: #f9fafb; border-radius: 10px;}
+        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        /* Shape Runner (Slide 6) */
+        .runner-area {
+            width: 100%;
+            height: 120px;
+            background: #1f2937;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .running-shape {
+            width: 60px;
+            height: 60px;
+            position: absolute;
+            top: 30px;
+            left: -70px;
+        }
+
+        /* Tutor Guide */
+        .tutor-alert {
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            color: #92400e;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Input Styles */
+        .input-ans {
+            padding: 6px 10px;
+            font-size: 1rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            width: 150px;
+            margin-right: 10px;
+        }
+        .input-ans.correct { border-color: #10b981; background: #ecfdf5; }
+        .input-ans.wrong { border-color: #ef4444; background: #fef2f2; }
+
+        .qa-row {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .progress-dots { display: flex; gap: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+        .dot.active { background: var(--secondary-color); width: 16px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <div class="slides-wrapper">
+            
+            <!-- SLIDE 1: COVER -->
+            <div class="slide active">
+                <span style="font-size: 4rem;">🎨</span>
+                <h1>Lesson 3: Colors Around Us</h1>
+                <p>Mengenal Dunia Penuh Warna dalam Bahasa Inggris</p>
+                <div style="background: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; color: #d97706; margin-top:20px;">
+                    Privat Course - Elemen Kosakata Dasar
+                </div>
+            </div>
+
+            <!-- SLIDE 2: TUJUAN -->
+            <div class="slide">
+                <h2>🎯 Tujuan Pembelajaran Hari Ini</h2>
+                <div style="background: white; padding: 25px; border-radius: 15px; text-align: left; max-width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <ul style="list-style-type: '🌟 '; padding-left: 20px; font-size: 1.1rem; line-height: 1.8;">
+                        <li>Siswa mampu <b>mengenali & melafalkan</b> 8 jenis warna dasar secara akurat.</li>
+                        <li>Siswa memahami aturan tata bahasa dasar: meletakkan <b>kata warna di depan kata benda</b> (e.g., <i>Red Ball</i>).</li>
+                        <li>Siswa dapat merespons pertanyaan tutor tentang jumlah dan warna benda di sekitar.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: KARTU WARNA + SUARA -->
+            <div class="slide">
+                <h2>Klik untuk Mendengar Pelafalan Warna!</h2>
+                <div class="color-grid">
+                    <div class="color-card" onclick="speak('Red')"><div class="color-block" style="background: #ef4444;"></div><b>Red</b><br><small>Merah</small></div>
+                    <div class="color-card" onclick="speak('Blue')"><div class="color-block" style="background: #3b82f6;"></div><b>Blue</b><br><small>Biru</small></div>
+                    <div class="color-card" onclick="speak('Yellow')"><div class="color-block" style="background: #eab308;"></div><b>Yellow</b><br><small>Kuning</small></div>
+                    <div class="color-card" onclick="speak('Green')"><div class="color-block" style="background: #22c55e;"></div><b>Green</b><br><small>Hijau</small></div>
+                    <div class="color-card" onclick="speak('Black')"><div class="color-block" style="background: #111827;"></div><b style="color:#111827">Black</b><br><small>Hitam</small></div>
+                    <div class="color-card" onclick="speak('White')"><div class="color-block" style="background: #ffffff;"></div><b>White</b><br><small>Putih</small></div>
+                    <div class="color-card" onclick="speak('Pink')"><div class="color-block" style="background: #f472b6;"></div><b>Pink</b><br><small>Merah Muda</small></div>
+                    <div class="color-card" onclick="speak('Purple')"><div class="color-block" style="background: #a855f7;"></div><b>Purple</b><br><small>Ungu</small></div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: PERCAKAPAN PANJANG GABUNGAN -->
+            <div class="slide">
+                <h2>🗣️ Percakapan Panjang (Review Gabungan)</h2>
+                <div class="scroll-box">
+                    <div class="chat-line"><strong>Alex:</strong> "Hello! Good morning. My name is Alex. I am <b>ten years old</b>. What is your name?"</div>
+                    <div class="chat-line"><strong>Budi:</strong> "Hi Alex! Good morning. My name is Budi. I am <b>nine years old</b>. Nice to meet you."</div>
+                    <div class="chat-line"><strong>Alex:</strong> "Nice to meet you too, Budi. Wow, look at your bag! It is so cool. It is <b>blue</b>!"</div>
+                    <div class="chat-line"><strong>Budi:</strong> "Thank you! Yes, my bag is <b>blue</b>. It has <b>three yellow pencils</b> inside."</div>
+                    <div class="chat-line"><strong>Alex:</strong> "Awesome. I have a <b>red book</b> and <b>two green erasers</b>. Colors are so fun!"</div>
+                    <div class="chat-line"><strong>Budi:</strong> "You are right. Let's enter the classroom together!"</div>
+                </div>
+                <div class="tutor-alert">💡 <b>Misi Siswa:</b> Tutor membaca bagian Alex, siswa membaca bagian Budi. Coba minta siswa menerjemahkan kata yang dicetak tebal spontan!</div>
+            </div>
+
+            <!-- SLIDE 5: BENDA BERWARNA (GENERATOR DINAMIS) -->
+            <div class="slide">
+                <h2>📦 Berapa Jumlah & Apa Warnanya?</h2>
+                <div class="object-display">
+                    <div class="img-box">
+                        <img id="obj-pic" src="https://res.cloudinary.com/ruparupa-com/image/upload/h_400,w_400,f_auto/Products/10470058_1.jpg" alt="Benda">
+                    </div>
+                    <div style="flex:1; text-align: left;">
+                        <h3 id="obj-title" style="color:var(--secondary-color); margin-bottom:10px;">1. Sepeda Hitam</h3>
+                        <p style="text-align:left; font-size:1rem; margin-bottom:15px;">Tutor bertanya: <b>"What is there?"</b></p>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <button class="btn btn-accent" id="btn-sound-guide">🔊 Bunyikan Petunjuk</button>
+                            <button class="btn" id="btn-next-obj">🔄 Ganti Gambar</button>
+                        </div>
+                        <div style="font-weight:bold; background:#f3f4f6; padding:10px; border-radius:8px;" id="text-guide">
+                            Siswa Menjawab: "There is one black bicycle."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: BANGUN DATAR BERJALAN -->
+            <div class="slide">
+                <h2>⚡ Game Kecepatan: Sebutkan Warnanya!</h2>
+                <p>Sebutkan warna bentuk yang lewat sebelum hilang! Pola akan semakin cepat.</p>
+                <div class="runner-area">
+                    <div class="running-shape" id="runner-shape"></div>
+                </div>
+                <div style="display:flex; gap:15px;">
+                    <button class="btn btn-success" id="btn-start-run">▶️ START</button>
+                    <button class="btn btn-accent" id="btn-stop-run">⏸️ STOP</button>
+                </div>
+                <div style="margin-top:10px; font-weight:bold;" id="speed-indicator">Kecepatan: Normal</div>
+            </div>
+
+            <!-- SLIDE 7: BRING ME GAME -->
+            <div class="slide" style="background:#dbeafe;">
+                <span style="font-size:4rem;">🏃‍♂️</span>
+                <h2>Game Waktu: "Bring Me Something!"</h2>
+                <div style="background:white; padding:20px; border-radius:15px; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.1); width:100%;">
+                    <p style="font-size:1.3rem; font-weight:bold; color:var(--accent-color);">Tutor berseru keras:</p>
+                    <h3 style="font-size:1.6rem; color:#1e40af; margin:10px 0;">"Bring me something... <span id="game-target-color" style="background:#fef08a; padding:2px 10px; border-radius:5px;">BLUE</span>!"</h3>
+                    <p><i>"One... two... three... four... five... ten!"</i></p>
+                    <div style="font-weight:bold; color:#047857; margin-top:15px;">Aturan: Siswa harus berlari mencari benda di sekitar rumah sesuai warna tersebut sebelum hitungan ke-10!</div>
+                </div>
+                <button class="btn btn-accent" id="btn-spin-color" style="margin-top:15px;">🎲 Acak Warna Baru</button>
+            </div>
+
+            <!-- SLIDE 8: CERITA NARASI + FITUR GANTI SOAL (10 CERITA) -->
+            <div class="slide">
+                <div style="display: flex; justify-content: space-between; align-items: center; width:100%; margin-bottom: 10px;">
+                    <h2>📖 Membaca Cerita & Mengisi Jawaban</h2>
+                    <button class="btn btn-accent" id="btn-next-story">Cerita Selanjutnya ➡️ (<span id="story-number">1</span>/10)</button>
+                </div>
+                <div class="scroll-box" id="story-text-container" style="max-height:150px; border-left: 5px solid var(--primary-color);">
+                    <!-- Cerita dimuat secara dinamis via JS -->
+                </div>
+                <div style="text-align:left; width:100%; display:flex; flex-direction:column;" id="qa-container">
+                    <!-- Form pertanyaan dimuat secara dinamis via JS -->
+                </div>
+            </div>
+
+            <!-- SLIDE 9: DUOLINGO -->
+            <div class="slide" style="background: #dcfce7;">
+                <img src="https://play-lh.googleusercontent.com/DsyWoouXk7psjF7DCG6MJj_rX9RR9-liQskZXoKvcqQIu_ybUm4F5RntxWh1IZAVSLI" style="width:100px;" alt="Duo">
+                <h2 style="margin-top:10px;">🦉 DUOLINGO TIME!</h2>
+                <p>Waktunya membuka aplikasi atau web Duolingo di gadget pendukung.</p>
+                <div style="background:white; padding:15px; border-radius:10px; font-weight:bold; color:#15803d; text-align:center; width: 100%;">
+                    Buka Topik: "Colors / Warna" -> Selesaikan 1 Sesi Pendek Bersama Tutor!
+                </div>
+            </div>
+
+            <!-- SLIDE 10: REFLEKSI -->
+            <div class="slide">
+                <h2>🤔 Refleksi & Kesimpulan Hari Ini</h2>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; width:100%;">
+                    <div style="background:white; padding:15px; border-radius:10px; border-left:4px solid #3b82f6; text-align:left;">
+                        <h4 style="color:#3b82f6;">Aturan Penting:</h4>
+                        <p style="text-align:left; font-size:0.95rem; margin-top:5px;">Warna disebut duluan baru nama bendanya.<br>✅ <b>Red ball</b><br>❌ Ball red</p>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:10px; border-left:4px solid #10b981; text-align:left;">
+                        <h4 style="color:#10b981;">Kosakata Baru 3-Word:</h4>
+                        <p style="text-align:left; font-size:0.95rem; margin-top:5px;"><b>Sky</b> (Noun) = Langit<br><b>Paint</b> (Verb) = Melukis<br><b>Blue</b> (Adjective) = Biru</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: THANK YOU -->
+            <div class="slide" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                <span style="font-size:5rem;">🎨✨</span>
+                <h1>Great Job, Superstar!</h1>
+                <h2>Thank You For Today!</h2>
+                <p>Kamu sudah bisa menyebutkan warna-warni di sekitarmu dengan hebat.</p>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <div class="controls">
+            <button class="btn" id="btn-prev" disabled>⬅ Back</button>
+            <div class="progress-dots" id="dots-container"></div>
+            <button class="btn btn-success" id="btn-next">Next ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        // DATA BANK 10 CERITA UNTUK SLIDE 8
+        const storiesData = [
+            {
+                story: "Rani goes to the central park. She sees a beautiful garden. There are <b>three red roses</b> near the bench. In the sky, Rani sees <b>two blue birds</b> flying happily. She also buys <b>one yellow ice cream</b>. It is a wonderful day.",
+                questions: [
+                    { q: "1. How many roses? What color?", ans: "three, red", hint: "number, color" },
+                    { q: "2. What color are the birds?", ans: "blue", hint: "color" },
+                    { q: "3. What color is the ice cream?", ans: "yellow", hint: "color" }
+                ]
+            },
+            {
+                story: "Budi looks inside his school bag. He finds <b>four blue books</b> on the desk. He also packs <b>two yellow pencils</b> and <b>one pink eraser</b>. Now, Budi is ready for school.",
+                questions: [
+                    { q: "1. How many books? What color?", ans: "four, blue", hint: "number, color" },
+                    { q: "2. What color are the pencils?", ans: "yellow", hint: "color" },
+                    { q: "3. What color is the eraser?", ans: "pink", hint: "color" }
+                ]
+            },
+            {
+                story: "My uncle has a big house. In the garage, there is <b>one black car</b>. Near the door, I can see <b>three white bicycles</b>. In the garden, there are many <b>green leaves</b>.",
+                questions: [
+                    { q: "1. What color is the car?", ans: "black", hint: "color" },
+                    { q: "2. How many bicycles? What color?", ans: "three, white", ans: "three, white", hint: "number, color" },
+                    { q: "3. What color are the leaves?", ans: "green", hint: "color" }
+                ]
+            },
+            {
+                story: "Siti goes to the market with her mother. They buy <b>five red apples</b> and <b>ten green grapes</b>. Siti also gets <b>one purple balloon</b> from a kind seller.",
+                questions: [
+                    { q: "1. How many apples? What color?", ans: "five, red", hint: "number, color" },
+                    { q: "2. How many grapes? What color?", ans: "ten, green", hint: "number, color" },
+                    { q: "3. What color is the balloon?", ans: "purple", hint: "color" }
+                ]
+            },
+            {
+                story: "Deni is playing in his bedroom. He has <b>six yellow toy cars</b> on the floor. He puts <b>two blue pillows</b> on his bed. He wears a comfortable <b>white shirt</b>.",
+                questions: [
+                    { q: "1. How many toy cars? What color?", ans: "six, yellow", hint: "number, color" },
+                    { q: "2. What color are the pillows?", ans: "blue", hint: "color" },
+                    { q: "3. What color is Deni's shirt?", ans: "white", hint: "color" }
+                ]
+            },
+            {
+                story: "Look at the playground! There is a big tree with <b>brown branches</b>. Under the tree, <b>two pink balls</b> are rolling. We can also see <b>three yellow benches</b>.",
+                questions: [
+                    { q: "1. What color are the branches?", ans: "brown", hint: "color" },
+                    { q: "2. How many balls? What color?", ans: "two, pink", hint: "number, color" },
+                    { q: "3. How many benches are there?", ans: "three, yellow", ans: "three", hint: "number, color" }
+                ]
+            },
+            {
+                story: "Tono loves animals. He visits a small farm. He sees <b>four white ducks</b> swimming in the pond. There are <b>two black cows</b> eating grass, and <b>one pink pig</b> sleeping.",
+                questions: [
+                    { q: "1. How many ducks? What color?", ans: "four, white", hint: "number, color" },
+                    { q: "2. What color are the cows?", ans: "black", hint: "color" },
+                    { q: "3. What color is the pig?", ans: "pink", hint: "color" }
+                ]
+            },
+            {
+                story: "Lisa is painting a picture. She draws the sky using a <b>blue crayon</b>. She draws a house with <b>one red roof</b>. Finally, she creates <b>five green trees</b> around the house.",
+                questions: [
+                    { q: "1. What color is the crayon?", ans: "blue", hint: "color" },
+                    { q: "2. What color is the roof?", ans: "red", hint: "color" },
+                    { q: "3. How many trees? What color?", ans: "five, green", hint: "number, color" }
+                ]
+            },
+            {
+                story: "It is my birthday party! I can see <b>eight pink balloons</b> on the wall. My birthday cake has <b>three yellow candles</b>. My father gives me a <b>black watch</b>.",
+                questions: [
+                    { q: "1. How many balloons? What color?", ans: "eight, pink", hint: "number, color" },
+                    { q: "2. What color are the candles?", ans: "yellow", hint: "color" },
+                    { q: "3. What color is the watch?", ans: "black", hint: "color" }
+                ]
+            },
+            {
+                story: "Andi sees a rainbow in the sky. He takes out his notebook. He lists his favorite colors: <b>red fruit</b>, <b>yellow sun</b>, and a <b>blue ocean</b>. Nature is very beautiful.",
+                questions: [
+                    { q: "1. What color is the fruit?", ans: "red", hint: "color" },
+                    { q: "2. What color is the sun?", ans: "yellow", hint: "color" },
+                    { q: "3. What color is the ocean?", ans: "blue", hint: "color" }
+                ]
+            }
+        ];
+
+        // DATA OBJECTS SLIDE 5
+        const objectsData = [
+            { title: "1. Sepeda Hitam", img: "https://res.cloudinary.com/ruparupa-com/image/upload/h_400,w_400,f_auto/Products/10470058_1.jpg", voice: "There is one black bicycle", guide: "Siswa Menjawab: \"There is one black bicycle.\"" },
+            { title: "2. 5 Tas Merah", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKcJKe_sM3olcYgVmyhchpjReABXKjQkfvdQ&s", voice: "There are six red bags", guide: "Siswa Menjawab: \"There are six red bags.\"" },
+            { title: "3. 3 Apel Hijau", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyEePLohRXhA7PjkFFdOY843yrUCiByZ_FkA&s", voice: "There are three green apples", guide: "Siswa Menjawab: \"There are three green apples.\"" },
+            { title: "4. 10 kaos biru", img: "https://i5.walmartimages.com/seo/10-Pack-Celivon-Toddler-Boys-Polo-Shirt-Baby-Tagless-Short-Sleeve-School-Uniform-Spring-Summer-Casual-Solid-Color-Gentleman-Tops-Girls-Holiday-TShirt_9897cbcd-9d4e-4f88-8f58-02006481bc24.22f3267ac1bb2056e66b281732929972.jpeg", voice: "There are ten blue shirts", guide: "Siswa Menjawab: \"There are ten blue shirts.\"" },
+            { title: "5. 2 Sepatu Putih", img: "https://sc04.alicdn.com/kf/Hba230ce263ac425ead4f5acb60d59b0e0.jpg", voice: "There are two white shoes", guide: "Siswa Menjawab: \"There are two white shoes.\"" }
+        ];
+
+        const gameColors = ["RED", "BLUE", "YELLOW", "GREEN", "PINK", "PURPLE", "BLACK"];
+        const shapeColors = ["#ef4444", "#3b82f6", "#eab308", "#22c55e", "#f472b6", "#a855f7"];
+        const shapeTypes = ["50%", "0%"]; 
+
+        let currentSlide = 0;
+        let currentObjIdx = 0;
+        let currentStoryIdx = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('dots-container');
+        
+        // SPEECH ENGINE
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'en-US';
+                u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // NAVIGATION ENGINE
+        slides.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            dotsContainer.appendChild(d);
+        });
+
+        function updateSlides() {
+            slides.forEach((s, i) => { 
+                s.classList.remove('active'); 
+                if(i === currentSlide) {
+                    s.classList.add('active');
+                    s.scrollTop = 0; 
+                }
+            });
+            document.getElementById('btn-prev').disabled = currentSlide === 0;
+            document.getElementById('btn-next').disabled = currentSlide === slides.length - 1;
+            document.querySelectorAll('.dot').forEach((d, i) => { 
+                d.classList.remove('active'); 
+                if(i === currentSlide) d.classList.add('active'); 
+            });
+        }
+
+        document.getElementById('btn-next').addEventListener('click', () => { if(currentSlide < slides.length-1){ currentSlide++; updateSlides(); } });
+        document.getElementById('btn-prev').addEventListener('click', () => { if(currentSlide > 0){ currentSlide--; updateSlides(); } });
+
+        // SLIDE 5 ENGINE
+        function updateObjectSlide() {
+            const data = objectsData[currentObjIdx];
+            document.getElementById('obj-pic').src = data.img;
+            document.getElementById('obj-title').innerText = data.title;
+            document.getElementById('text-guide').innerText = data.guide;
+        }
+        document.getElementById('btn-sound-guide').addEventListener('click', () => { speak(objectsData[currentObjIdx].voice); });
+        document.getElementById('btn-next-obj').addEventListener('click', () => { currentObjIdx = (currentObjIdx + 1) % objectsData.length; updateObjectSlide(); });
+
+        // SLIDE 6 ENGINE (SHAPE RUNNER)
+        let runnerInterval = null;
+        let speed = 4000;
+        const runner = document.getElementById('runner-shape');
+        
+        function startRunner() {
+            clearInterval(runnerInterval);
+            runnerInterval = setInterval(() => {
+                const col = shapeColors[Math.floor(Math.random()*shapeColors.length)];
+                const rad = shapeTypes[Math.floor(Math.random()*shapeTypes.length)];
+                runner.style.background = col;
+                runner.style.borderRadius = rad;
+                
+                runner.style.transition = 'none';
+                runner.style.left = '-70px';
+                setTimeout(() => {
+                    runner.style.transition = `left ${speed/1000}s linear`;
+                    runner.style.left = '960px';
+                }, 50);
+
+                if(speed > 1200) {
+                    speed -= 400;
+                    document.getElementById('speed-indicator').innerText = `Kecepatan: ${speed < 2000 ? '⚡ CEPAT!' : 'Normal'}`;
+                }
+            }, speed + 200);
+        }
+
+        document.getElementById('btn-start-run').addEventListener('click', () => { speed = 4000; document.getElementById('speed-indicator').innerText = "Kecepatan: Mulai"; startRunner(); });
+        document.getElementById('btn-stop-run').addEventListener('click', () => { clearInterval(runnerInterval); runner.style.left = '-70px'; });
+
+        // SLIDE 7 ENGINE (SPIN COLOR)
+        document.getElementById('btn-spin-color').addEventListener('click', () => {
+            const randColor = gameColors[Math.floor(Math.random()*gameColors.length)];
+            document.getElementById('game-target-color').innerText = randColor;
+            speak(`Bring me something ${randColor}`);
+        });
+
+        // SLIDE 8 ENGINE (DYNAMIC 10 STORIES GENERATOR)
+        function loadStory() {
+            const currentData = storiesData[currentStoryIdx];
+            
+            // Set Nomor dan Teks Cerita
+            document.getElementById('story-number').innerText = currentStoryIdx + 1;
+            document.getElementById('story-text-container').innerHTML = `<strong>Story:</strong><br>${currentData.story}`;
+            
+            // Render Pertanyaan secara Dinamis
+            const qaContainer = document.getElementById('qa-container');
+            qaContainer.innerHTML = ''; // Kosongkan form lama
+            
+            currentData.questions.forEach((qObj, index) => {
+                const row = document.createElement('div');
+                row.className = 'qa-row';
+                row.innerHTML = `
+                    <span>${qObj.q}</span>
+                    <input type="text" class="input-ans" id="story-ans-${index}" placeholder="${qObj.hint}">
+                    <button class="btn btn-success" onclick="validateStoryAns(${index}, '${qObj.ans}')">Cek</button>
+                `;
+                qaContainer.appendChild(row);
+            });
+
+            // Kembalikan scroll ke paling atas halaman slide 8
+            document.querySelector('.slide.active').scrollTop = 0;
+        }
+
+        function validateStoryAns(index, correctValue) {
+            const inputField = document.getElementById(`story-ans-${index}`);
+            if (inputField.value.trim().toLowerCase() === correctValue.toLowerCase()) {
+                inputField.className = "input-ans correct";
+                speak("Nice");
+            } else {
+                inputField.className = "input-ans wrong";
+                speak("Try again");
+            }
+        }
+
+        // Event listener ganti cerita selanjutnya
+        document.getElementById('btn-next-story').addEventListener('click', () => {
+            currentStoryIdx = (currentStoryIdx + 1) % storiesData.length;
+            loadStory();
+        });
+
+        // Inisialisasi cerita saat dokumen pertama kali dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStory();
+        });
+    </script>
+</body>
+</html>
